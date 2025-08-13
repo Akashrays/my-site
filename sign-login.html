@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Login / Signup Example</title>
+    <style>
+      body {
+        font-family: Arial;
+        padding: 20px;
+        background: #f4f4f4;
+      }
+      .container {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        width: 300px;
+        margin: auto;
+      }
+      input {
+        width: 100%;
+        padding: 8px;
+        margin: 5px 0;
+      }
+      button {
+        width: 100%;
+        padding: 10px;
+        margin-top: 10px;
+        cursor: pointer;
+      }
+      .hidden {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h2>Login</h2>
+      <input type="text" id="loginName" placeholder="Enter Name" required />
+      <input
+        type="text"
+        id="loginPhone"
+        placeholder="Enter Mobile Number"
+        required
+      />
+      <button onclick="login()">Login</button>
+      <p id="loginMessage"></p>
+    </div>
+
+    <div class="container hidden" id="signupBox">
+      <h2>Signup</h2>
+      <input type="text" id="signupName" placeholder="Enter Name" required />
+      <input
+        type="text"
+        id="signupPhone"
+        placeholder="Enter Mobile Number"
+        required
+      />
+      <input type="email" id="signupEmail" placeholder="Enter Email" required />
+      <button onclick="signup()">Signup</button>
+      <p id="signupMessage"></p>
+    </div>
+
+    <script>
+      function login() {
+        let name = document.getElementById("loginName").value.trim();
+        let phone = document.getElementById("loginPhone").value.trim();
+
+        if (!name || !phone) {
+          document.getElementById("loginMessage").innerText =
+            "Please enter both name and phone.";
+          return;
+        }
+
+        let users = JSON.parse(localStorage.getItem("users")) || [];
+        let existingUser = users.find(
+          (u) => u.phone === phone && u.name === name
+        );
+
+        if (existingUser) {
+          document.getElementById("loginMessage").innerText =
+            "✅ Successfully Logged In!";
+        } else {
+          document.getElementById("loginMessage").innerText =
+            "User not found. Please Signup.";
+          document.getElementById("signupBox").classList.remove("hidden");
+          document.getElementById("signupName").value = name;
+          document.getElementById("signupPhone").value = phone;
+        }
+      }
+
+      function signup() {
+        let name = document.getElementById("signupName").value.trim();
+        let phone = document.getElementById("signupPhone").value.trim();
+        let email = document.getElementById("signupEmail").value.trim();
+
+        if (!name || !phone || !email) {
+          document.getElementById("signupMessage").innerText =
+            "Please fill all fields.";
+          return;
+        }
+
+        let users = JSON.parse(localStorage.getItem("users")) || [];
+        let existingUser = users.find((u) => u.phone === phone);
+
+        if (existingUser) {
+          document.getElementById("signupMessage").innerText =
+            "User already exists. Please login.";
+          return;
+        }
+
+        users.push({ name, phone, email });
+        localStorage.setItem("users", JSON.stringify(users));
+
+        document.getElementById("signupMessage").innerText =
+          "✅ Account Created Successfully! Please Login.";
+        document.getElementById("signupBox").classList.add("hidden");
+      }
+    </script>
+  </body>
+</html>

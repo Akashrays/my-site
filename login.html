@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Login</title>
+    <link rel="stylesheet" href="styles.css" />
+    <a href="signup.html">Sign Up</a>
+  </head>
+  <body>
+    <div class="container">
+      <h2>Login</h2>
+      <input type="text" id="loginName" placeholder="Enter Name" required />
+      <input
+        type="text"
+        id="loginPhone"
+        placeholder="Enter Mobile Number"
+        required
+      />
+      <button onclick="login()">Login</button>
+      <p id="loginMessage"></p>
+      <p>Don't have an account? <a href="signup.html">Signup</a></p>
+    </div>
+
+    <script>
+      function login() {
+        let name = document.getElementById("loginName").value.trim();
+        let phone = document.getElementById("loginPhone").value.trim();
+
+        if (!name || !phone) {
+          document.getElementById("loginMessage").innerText =
+            "Please enter both name and phone.";
+          return;
+        }
+
+        let users = JSON.parse(localStorage.getItem("users")) || [];
+        let existingUser = users.find(
+          (u) => u.phone === phone && u.name === name
+        );
+
+        if (existingUser) {
+          document.getElementById("loginMessage").innerText =
+            "✅ Successfully Logged In!";
+        } else {
+          document.getElementById("loginMessage").innerHTML =
+            "User not found. Please <a href='signup.html'>Signup</a>.";
+        }
+      }
+    </script>
+  </body>
+</html>
