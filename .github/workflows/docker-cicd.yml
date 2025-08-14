@@ -2,7 +2,9 @@ name: Docker CI/CD
 
 on:
   push:
-    branches: [main, dev]
+    branches:
+      - main
+      - devakash # replace with your actual dev branch name
 
 env:
   IMAGE_NAME: ${{ secrets.DOCKERHUB_USERNAME }}/my-site
@@ -35,6 +37,7 @@ jobs:
   deploy-to-ec2:
     needs: build-and-push
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
     steps:
       - name: Deploy on EC2 via SSH
         uses: appleboy/ssh-action@v1.0.3
@@ -45,17 +48,14 @@ jobs:
           script: |
             IMAGE="${{ secrets.DOCKERHUB_USERNAME }}/my-site:latest"
 
-            # Login to Docker Hub (needed if private repo)
             echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
 
-            # Pull latest image
             docker pull "$IMAGE" || true
 
-            # Stop and remove old container
-            docker rm -f }/my-site || true
+            docker rm -f my-site || true
 
-            # Run new container
-            docker run -d --name my-site -p 3000:3000 -p 3001:3001 --restart=always "$IMAGE"
+            docker run -d --name my-site \
+              -p 3000:3000 -p 3001:3001 \
+              --restart=always "$IMAGE"
 
-            # Show running containers
             docker ps --filter "name=my-site"
