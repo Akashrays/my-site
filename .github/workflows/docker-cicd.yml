@@ -5,7 +5,7 @@ on:
     branches: [main, devakash]
 
 env:
-  IMAGE_NAME: ${{ secrets.DOCKERHUB_USERNAME }}/my-site
+  IMAGE_NAME: ${{ secrets.DOCKERHUB_USERNAME }}/myappaugust
 
 jobs:
   build-and-push:
@@ -43,7 +43,7 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            IMAGE="${{ secrets.DOCKERHUB_USERNAME }}/my-site:latest"
+            IMAGE="${{ secrets.DOCKERHUB_USERNAME }}/myappaugust:latest"
 
             # Login to Docker Hub (needed if private repo)
             echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
@@ -52,12 +52,12 @@ jobs:
             docker pull "$IMAGE" || true
 
             # Stop and remove old container
-            docker rm -f }/my-site || true
+            docker rm -f }/myappaugust || true
 
             # Run new container
-            docker run -d --name my-site -p 3000:3000 -p 3001:3001 --restart=always "$IMAGE"
+            docker run -d --name /myappaugust -p 3000:3000 -p 3001:3001 --restart=always "$IMAGE"
 
             # Show running containers
-            docker ps --filter "name=my-site"
+            docker ps --filter "name=/myappaugust"
 
 # testing my CI CD are working or not
