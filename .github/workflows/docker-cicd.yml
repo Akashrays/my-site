@@ -2,7 +2,7 @@ name: Docker CI/CD
 
 on:
   push:
-    branches: [main, dev]
+    branches: [main, devakash]
 
 env:
   IMAGE_NAME: ${{ secrets.DOCKERHUB_USERNAME }}/my-site
