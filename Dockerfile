@@ -1,18 +1,5 @@
-# ---- build stage ----
-FROM node:18-alpine AS build
-WORKDIR /app
-COPY package*.json ./
-RUN npm install
-COPY . .
-# Agar frontend build hai to: RUN npm run build
-
-# ---- run stage ----
-FROM node:18-alpine
-WORKDIR /app
-ENV NODE_ENV=production
-COPY package*.json ./
-RUN npm install --omit=dev
-COPY --from=build /app ./
-EXPOSE 3000
-CMD ["npm","start"]
-
+# Simple static site with Nginx
+FROM nginx:1.27-alpine
+# Copy everything (HTML/CSS/JS/images) into Nginx’s web root
+COPY ./ /usr/share/nginx/html
+# Nginx listens on 80 inside the container
