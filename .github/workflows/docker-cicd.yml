@@ -58,3 +58,4 @@ jobs:
 
             # Show running containers
             docker ps --filter "name=my-site"
+  # IMAGE_NAME: ${{ secrets.DOCKERHUB_USERNAME }}/myappaugust
