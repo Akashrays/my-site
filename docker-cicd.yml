@@ -2,9 +2,7 @@ name: Docker CI/CD
 
 on:
   push:
-    branches:
-      - main
-      - devakash
+    branches: [main, devakash]
 
 env:
   IMAGE_NAME: ${{ secrets.DOCKERHUB_USERNAME }}/myappaugust
@@ -13,7 +11,7 @@ jobs:
   build-and-push:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Set up Docker Buildx
@@ -25,7 +23,7 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build & Push
+      - name: Build and Push Docker image
         uses: docker/build-push-action@v5
         with:
           context: .
@@ -37,25 +35,30 @@ jobs:
   deploy-to-ec2:
     needs: build-and-push
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' # only deploy from main
     steps:
       - name: Deploy on EC2 via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USER }} # set this secret to ubuntu OR ec2-user
+          username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             IMAGE="${{ secrets.DOCKERHUB_USERNAME }}/myappaugust:latest"
 
+            # Login to Docker Hub (needed if private repo)
             echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
 
+            # Pull latest image
             docker pull "$IMAGE" || true
-            docker rm -f myappaugust || true
 
-            # Nginx serves on 80 inside container; map it to 3000 outside
-            docker run -d --name myappaugust \
-              -p 3000:80 \
-              --restart=always "$IMAGE"
+            # Stop and remove old container
+            docker rm -f }/myappaugust || true
 
-            docker ps --filter "name=myappaugust" --format "table {{.Names}}\t{{.Image}}\t{{.Ports}}\t{{.Status}}"
+            # Run new container
+            docker run -d --name /myappaugust -p 3000:3000 -p 3001:3001 --restart=always "$IMAGE"
+
+            # Show running containers
+            docker ps --filter "name=/myappaugust"
+
+# testing my CI CD are working or not
+# testing my CI CD are working or not
